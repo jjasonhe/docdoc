@@ -127,7 +127,6 @@ def parse_text(txtpath):
 		else:
 			value.append(p[i])
 			i += 1
-
 	return table
 
 def return_csv(table):
