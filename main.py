@@ -1,8 +1,9 @@
 import os
-import numpy as np
 import tika
-import csv
 from tika import parser
+import csv
+from tkinter import *
+from tkinter import filedialog
 
 def return_parsed(filepath):
 	parsed = parser.from_file(filepath)
@@ -48,7 +49,7 @@ def parse_text(txtpath):
 
 			if len(table) != 0:
 				writer.writerow(table)
-				print(table)
+				# print(table)
 
 			tag = ''
 			value = []
@@ -156,15 +157,31 @@ def parse_text(txtpath):
 	if tag != '':
 		table[tag] = value
 	writer.writerow(table)
-	return table
+	return csvpath
 
-def return_csv(table):
-	return
+top = Tk()
 
-#parsed = return_parsed('hepbtest.pdf')
-#print(parsed["content"][:400])
-#parse_text(parsed["content"])
+def loadCallBack():
+	top.filename = filedialog.askopenfilename(title='Select pdf to parse',
+							   				  filetypes=[("pdf",'*.pdf')])
+	print(top.filename)
 
-txtpath = create_text('hepbtest.pdf')
-csvpath = parse_text(txtpath)
-print(csvpath)
+def textCallBack():
+	top.txtpath = create_text(top.filename)
+	print(top.txtpath)
+
+def csvCallBack():
+	top.csvpath = parse_text(top.txtpath)
+	print(top.csvpath)
+
+Bload = Button(top, text='LOAD PDF', command=loadCallBack, justify=CENTER, width=16, relief=RAISED)
+Bload.place(relx=0.5, rely=0.35, anchor=CENTER)
+
+Btext = Button(top, text='CREATE TXT', command=textCallBack, justify=CENTER, width=16, relief=RAISED)
+Btext.place(relx=0.5, rely=0.5, anchor=CENTER)
+
+Bcsv = Button(top, text='GENERATE CSV', command=csvCallBack, justify=CENTER, width=16, relief=RAISED)
+Bcsv.place(relx=0.5, rely=0.65, anchor=CENTER)
+
+top.title("docdoc")
+top.mainloop()
