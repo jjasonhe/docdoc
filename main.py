@@ -41,13 +41,15 @@ def parse_text(txtpath):
 	value = []
 	while i < len(p):
 		if p[i:i+6] == 'CLIA#:':
-			if len(table) != 0:
-				writer.writerow(table)
-				print(table)
 			value = ''.join(value)
 			value = value.strip()
 			if tag != '':
 				table[tag] = value
+
+			if len(table) != 0:
+				writer.writerow(table)
+				print(table)
+
 			tag = ''
 			value = []
 			i += 6
@@ -70,7 +72,6 @@ def parse_text(txtpath):
 				temp.append(value[j])
 				if value[j+1:j+5] == 'PAGE':
 					break
-			print(temp)
 			temp = ''.join(temp)
 			temp = temp.strip()
 			temp = temp.strip('\n')
@@ -150,6 +151,10 @@ def parse_text(txtpath):
 		else:
 			value.append(p[i])
 			i += 1
+	value = ''.join(value)
+	value = value.strip()
+	if tag != '':
+		table[tag] = value
 	writer.writerow(table)
 	return table
 
@@ -161,6 +166,5 @@ def return_csv(table):
 #parse_text(parsed["content"])
 
 txtpath = create_text('hepbtest.pdf')
-print(txtpath)
 csvpath = parse_text(txtpath)
 print(csvpath)
