@@ -24,6 +24,12 @@ def parse_text(txtpath):
 	p = f.read()
 	f.close()
 
+	csvpath = txtpath[:-3] + 'csv'
+	f = open(csvpath, 'w', newline='')
+	fn = ['CLIA#', 'Laboratory Director', 'NAME', 'PATIENT ID#', 'ACCESSION #', 'DOB', 'COLLECTED', 'RECEIVED', 'REPORTED', 'COLLECTED BY']
+	writer = csv.DictWriter(f, fieldnames=fn)
+	writer.writeheader()
+
 	table = {}
 
 	# Skips the "Converted from ____.TMP"
@@ -35,9 +41,12 @@ def parse_text(txtpath):
 	value = []
 	while i < len(p):
 		if p[i:i+6] == 'CLIA#:':
+			if len(table) != 0:
+				writer.writerow(table)
+				print(table)
 			value = ''.join(value)
 			value = value.strip()
-			if value != '':
+			if tag != '':
 				table[tag] = value
 			tag = ''
 			value = []
@@ -46,7 +55,7 @@ def parse_text(txtpath):
 		elif p[i:i+20] == 'Laboratory Director:':
 			value = ''.join(value)
 			value = value.strip()
-			if value != '':
+			if tag != '':
 				table[tag] = value
 			tag = ''
 			value = []
@@ -55,7 +64,21 @@ def parse_text(txtpath):
 		elif p[i:i+5] == 'NAME:':
 			value = ''.join(value)
 			value = value.strip()
-			if value != '':
+
+			temp = []
+			for j in range(0, len(value)):
+				temp.append(value[j])
+				if value[j+1:j+5] == 'PAGE':
+					break
+			print(temp)
+			temp = ''.join(temp)
+			temp = temp.strip()
+			temp = temp.strip('\n')
+
+			value = temp
+			temp = []
+
+			if tag != '':
 				table[tag] = value
 			tag = ''
 			value = []
@@ -64,7 +87,7 @@ def parse_text(txtpath):
 		elif p[i:i+12] == 'PATIENT ID#:':
 			value = ''.join(value)
 			value = value.strip()
-			if value != '':
+			if tag != '':
 				table[tag] = value
 			tag = ''
 			value = []
@@ -73,7 +96,7 @@ def parse_text(txtpath):
 		elif p[i:i+12] == 'ACCESSION #:':
 			value = ''.join(value)
 			value = value.strip()
-			if value != '':
+			if tag != '':
 				table[tag] = value
 			tag = ''
 			value = []
@@ -82,7 +105,7 @@ def parse_text(txtpath):
 		elif p[i:i+4] == 'DOB:':
 			value = ''.join(value)
 			value = value.strip()
-			if value != '':
+			if tag != '':
 				table[tag] = value
 			tag = ''
 			value = []
@@ -91,7 +114,7 @@ def parse_text(txtpath):
 		elif p[i:i+10] == 'COLLECTED:':
 			value = ''.join(value)
 			value = value.strip()
-			if value != '':
+			if tag != '':
 				table[tag] = value
 			tag = ''
 			value = []
@@ -100,7 +123,7 @@ def parse_text(txtpath):
 		elif p[i:i+9] == 'RECEIVED:':
 			value = ''.join(value)
 			value = value.strip()
-			if value != '':
+			if tag != '':
 				table[tag] = value
 			tag = ''
 			value = []
@@ -109,7 +132,7 @@ def parse_text(txtpath):
 		elif p[i:i+9] == 'REPORTED:':
 			value = ''.join(value)
 			value = value.strip()
-			if value != '':
+			if tag != '':
 				table[tag] = value
 			tag = ''
 			value = []
@@ -118,7 +141,7 @@ def parse_text(txtpath):
 		elif p[i:i+13] == 'COLLECTED BY:':
 			value = ''.join(value)
 			value = value.strip()
-			if value != '':
+			if tag != '':
 				table[tag] = value
 			tag = ''
 			value = []
@@ -127,6 +150,7 @@ def parse_text(txtpath):
 		else:
 			value.append(p[i])
 			i += 1
+	writer.writerow(table)
 	return table
 
 def return_csv(table):
