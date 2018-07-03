@@ -40,7 +40,9 @@ def parse_text(txtpath):
 	      'TEST PERFORMED',
 	      'REPORTED DATE',
 	      'PROVIDER NAME (NPI)',
-	      'LAB  OBSERVATION                  IN RANGE        OUT OF RANGE        REF. RANGE',
+	      'LAB',
+	      'OBSERVATION',
+	      'RESULT',
 	      'Performing Laboratory Information',
 	      'Abnormal Diagnosis Codes',
 	      'Notes']
@@ -245,8 +247,49 @@ def parse_text(txtpath):
 		elif p[i:i+34] == 'Performing Laboratory Information:':
 			value = ''.join(value)
 			value = value.strip()
-			if tag != '':
-				table[tag] = value
+
+			temp = value.splitlines()[0]
+
+			lab = []
+			obs = []
+			res = []
+			for k in range(0, len(temp)):
+				lab.append(temp[k])
+				if temp[k+1] == ' ':
+					break
+			k += 1
+			for k in range(k, len(temp)):
+				obs.append(temp[k])
+				if temp[k+1:k+3] == '  ' and temp[k] != ' ':
+					break
+			k += 1
+			for k in range(k, len(temp)):
+				res.append(temp[k])
+				# if (temp[k+1:k+3] == '  ' or temp[k+1] == temp[-1]) and temp[k] != ' ':
+				if temp[k+1:k+3] == '  ' and temp[k] != ' ':
+					break
+			lab = ''.join(lab)
+			obs = ''.join(obs)
+			res = ''.join(res)
+			lab = lab.strip()
+			lab = lab.strip('\n')
+			lab = lab.strip()
+			lab = lab.strip('\n')
+			obs = obs.strip()
+			obs = obs.strip('\n')
+			obs = obs.strip()
+			obs = obs.strip('\n')
+			res = res.strip()
+			res = res.strip('\n')
+			res = res.strip()
+			res = res.strip('\n')
+
+			table['LAB'] = lab
+			table['OBSERVATION'] = obs
+			table['RESULT'] = res
+
+			# if tag != '':
+			# 	table[tag] = value
 			tag = ''
 			value = []
 			i += 34
